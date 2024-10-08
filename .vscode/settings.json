@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.jsx": "javascript",
+    "taxation.h": "c",
+    "csv.h": "c"
+  }
+}

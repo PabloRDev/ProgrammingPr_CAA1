@@ -21,6 +21,16 @@ typedef struct _tDate {
 #define AMOUNT_NO_RENT 150.0
 
 // Ex 1: Define data types here...
+typedef struct tTenant
+{
+    
+};
+typedef struct tProperty
+{
+};
+typedef struct tLandlord
+{
+};
 
 typedef struct _tProperties {
     tProperty elems[MAX_PROPERTIES];
