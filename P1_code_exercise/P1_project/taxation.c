@@ -92,24 +92,32 @@ void property_parse(tProperty *data, tCSVEntry entry)
 // Adds to a structure of type tLandlords, the information of a new property(tProperty). If the property belongs to an owner who does not exist in the structure, nothing is done. If the owner exists and already has the property stored, nothing is done either. If the owner does not have the property in storage, the amount to be paid in taxes by the owner is added and updated considering that the new property is not rented.
 void landlord_add_property(tLandlords *tLandlords, tProperty property)
 {
-    for (i = 0; i < tLandlords->count; i++)
+    // Landlords iteration
+    for (int i = 0; i < tLandlords->count; i++)
     {
-        tLandlord landlord = tLandlords->elems[i];
-        int noContains = 0;
+        tLandlord *landlord = &tLandlords->elems[i];
 
-        for (j = 0; j < landlord.properties.count; j++)
+        if (landlord->id == property.landlord_id)
         {
-            if (landlord.id == property.landlord_id)
-            {
-                if (landlord.properties.elems[j].cadastral_ref != property.cadastral_ref)
-                {
-                    noContains++;
+            int exists = 0;
 
-                    if (noContains == landlord.properties.count) {
-                        landlord.tax + 150;
-                    }
-                } 
+            // Properties iteration
+            for (int j = 0; j < landlord->properties.count; j++)
+            {
+                if (landlord->properties.elems[j].cadastral_ref == property.cadastral_ref)
+                {
+                    exists = 1;
+
+                    break;
+                }
             }
+
+            if (!exists)
+            {
+                landlord->tax += 150;
+            }
+
+            break;
         }
     }
 }
