@@ -8,6 +8,8 @@ typedef struct _tDate {
     int year;
 } tDate;
 
+int i, j;
+
 // Ex 1: Define data types here...
 
 ///////////////////////////
