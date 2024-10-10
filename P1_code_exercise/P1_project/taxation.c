@@ -116,8 +116,6 @@ void landlord_add_property(tLandlords *tLandlords, tProperty property)
             {
                 landlord->tax += 150;
             }
-
-            break;
         }
     }
 }
