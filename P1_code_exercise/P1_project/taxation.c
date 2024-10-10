@@ -69,9 +69,32 @@ void tenant_parse(tTenant *data, tCSVEntry entry)
 }
 
 ////////////////////////////////////////
-void landlords_process_tenant(tLandlords *data, tTenant tenant)
+// Update owner tax by tenant:
+// Given the property rented to a tenant it updates the amount to be paid by its owner. If the property does not belong to any owner, nothing is done.
+void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
 {
-    // TODO
+    char *propertyRef = tenant.cadastral_ref;
+
+    // Landlords iteration
+    for (int i = 0; i < tLandlords->count; i++)
+    {
+        tLandlord *landlord = &tLandlords->elems[i];
+
+        // Properties iteration
+        for (int j = 0; j < landlord->properties.count; j++)
+        {
+            if (landlord->properties.elems[j].cadastral_ref != propertyRef)
+            {
+                continue;
+            }
+
+            // Update owner tax based on tenant age
+            float tax_increment = tenant.age > 35 ? 0.2 : 0.1;
+            landlord->tax += landlord->tax * tax_increment;
+
+            return;
+        }
+    }
 }
 
 // Get a property
@@ -89,7 +112,7 @@ void property_parse(tProperty *data, tCSVEntry entry)
 ////////////////////////////////////////
 
 // Add a new property:
-// Adds to a structure of type tLandlords, the information of a new property(tProperty). If the property belongs to an owner who does not exist in the structure, nothing is done. If the owner exists and already has the property stored, nothing is done either. If the owner does not have the property in storage, the amount to be paid in taxes by the owner is added and updated considering that the new property is not rented.
+// If the owner does not have the property in storage, the amount to be paid in taxes by the owner is added and updated considering that the new property is not rented.
 void landlord_add_property(tLandlords *tLandlords, tProperty property)
 {
     // Landlords iteration
