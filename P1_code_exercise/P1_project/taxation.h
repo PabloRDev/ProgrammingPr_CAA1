@@ -2,8 +2,9 @@
 #define __TAXATION_H__
 #include "csv.h"
 
-typedef struct _tDate {    
-    int day; 
+typedef struct _tDate
+{
+    int day;
     int month;
     int year;
 } tDate;
@@ -50,12 +51,14 @@ typedef struct _tLandlord
     tProperties properties;
 } tLandlord;
 
-typedef struct _tProperties {
+typedef struct _tProperties
+{
     tProperty elems[MAX_PROPERTIES];
     int count;
 } tProperties;
 
-typedef struct _tLandlords {
+typedef struct _tLandlords
+{
     tLandlord elems[MAX_LANDLORDS];
     int count;
 } tLandlords;
@@ -64,13 +67,13 @@ typedef struct _tLandlords {
 // Available methods
 //////////////////////////////////
 // Initialize the properties data
-void properties_init(tProperties* data);
+void properties_init(tProperties *data);
 
 // Get the number of properties
 int properties_len(tLandlord data);
 
 // Initialize the landlords data
-void landlords_init(tLandlords* data);
+void landlords_init(tLandlords *data);
 
 // Get the number of landlords
 int landlords_len(tLandlords data);
@@ -80,40 +83,38 @@ int landlords_len(tLandlords data);
 /////////////////////////////////////
 
 // Parse input from CSVEntry
-void landlord_parse(tLandlord* data, tCSVEntry entry);
+void landlord_parse(tLandlord *data, tCSVEntry entry);
 
 // Add a new tenant
-void landlords_add(tLandlords* data, tLandlord tenant);
+void landlords_add(tLandlords *data, tLandlord tenant);
 
 // Copy the data from the source to destination
-void landlords_cpy(tLandlords* destination, tLandlords source);
+void landlords_cpy(tLandlords *destination, tLandlords source);
 
 // Parse input from CSVEntry
-void property_parse(tProperty* data, tCSVEntry entry);
+void property_parse(tProperty *data, tCSVEntry entry);
 
 // Add a new property
-void landlord_add_property(tLandlords* data, tProperty property);
+void landlord_add_property(tLandlords *data, tProperty property);
 
 // Parse input from CSVEntry
-void tenant_parse(tTenant* data, tCSVEntry entry);
+void tenant_parse(tTenant *data, tCSVEntry entry);
 
 // Calculate and update taxation given tenant
-void landlords_process_tenant(tLandlords* data, tTenant tenant);
+void landlords_process_tenant(tLandlords *data, tTenant tenant);
 
 // Get landlord data in a string
-void landlord_get(tLandlords data, int index, char* buffer);
+void landlord_get(tLandlords data, int index, char *buffer);
 
 // Get a property data in a string
-void property_get(tLandlord data, int index, char* buffer);
+void property_get(tLandlord data, int index, char *buffer);
 
 // returns true if field tax of expected[index] is greater than the one in declarant[index]
 bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index);
 
-
 /////////////////////////////////////
 // Define your aux methods here
 /////////////////////////////////////
-
 
 ////////////////////////////////////////////
 #endif
