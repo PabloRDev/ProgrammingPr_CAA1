@@ -123,10 +123,17 @@ void property_get(tLandlord data, int index, char *buffer)
             property.landlord_id);
 }
 
-// Parse input from CSVEntry
+// Parse input from CSVEntry:
+// given an entry in the CSV file (tCSVEntry) with the data of a property, it assigns them to a structure of type tProperty
 void property_parse(tProperty *data, tCSVEntry entry)
 {
-    // TODO
+    strncpy(data->cadastral_ref, entry.fields[0], MAX_CADASTRAL_REF);
+    data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
+    strncpy(data->street, entry.fields[1], MAX_STREET);
+    data->street[MAX_STREET - 1] = '\0';  // Ensure null termination
+    data->number = atoi(entry.fields[2]); // Convert the string to an integer
+    strncpy(data->landlord_id, entry.fields[3], MAX_PERSON_ID);
+    data->landlord_id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
 }
 
 ////////////////////////////////////////
