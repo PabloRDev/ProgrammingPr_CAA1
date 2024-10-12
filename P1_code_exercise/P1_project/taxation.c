@@ -185,10 +185,15 @@ void landlord_get(tLandlords data, int index, char *buffer)
             landlord.tax);
 }
 
-// Parse input from CSVEntry
+// Parse input from CSVEntry:
+// Given an entry in the CSV file (tCSVEntry) with the data of an owner(without property data), it initializes a structure of type tLandlord with that data.
 void landlord_parse(tLandlord *data, tCSVEntry entry)
 {
-    // TODO
+    strncpy(data->name, entry.fields[0], MAX_NAME);
+    data->name[MAX_NAME - 1] = '\0'; // Ensure null termination
+    strncpy(data->id, entry.fields[1], MAX_PERSON_ID);
+    data->id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
+    data->tax = atof(entry.fields[2]);
 }
 
 ////////////////////////////////////////
