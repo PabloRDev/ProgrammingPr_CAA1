@@ -81,13 +81,11 @@ void tenant_parse(tTenant *data, tCSVEntry entry)
 ////////////////////////////////////////
 // Update owner tax by tenant:
 // Given the property rented to a tenant it updates the amount to be paid by its owner. If the property does not belong to any owner, nothing is done.
-void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
-{
+void landlords_process_tenant(tLandlords *data, tTenant tenant) {
     const char *propertyRef = tenant.cadastral_ref;
 
-    for (int i = 0; i < tLandlords->count; i++)
-    {
-        tLandlord *landlord = &tLandlords->elems[i];
+    for (int i = 0; i < data->count; i++) {
+        tLandlord *landlord = &data->elems[i];
 
         for (int j = 0; j < landlord->properties.count; j++)
         {
@@ -97,7 +95,7 @@ void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
             }
 
             // Update owner tax based on tenant age
-            float tax_increment = tenant.age > 35 ? 0.2 : 0.1;
+            const float tax_increment = tenant.age > 35 ? 0.2 : 0.1;
             landlord->tax += landlord->tax * tax_increment;
 
             return;
@@ -140,11 +138,9 @@ void property_parse(tProperty *data, tCSVEntry entry)
 
 // Add a new property:
 // If the owner does not have the property in storage, the amount to be paid in taxes by the owner is added and updated considering that the new property is not rented.
-void landlord_add_property(tLandlords *tLandlords, tProperty property)
-{
-    for (int i = 0; i < tLandlords->count; i++)
-    {
-        tLandlord *landlord = &tLandlords->elems[i];
+void landlord_add_property(tLandlords *data, tProperty property) {
+    for (int i = 0; i < data->count; i++) {
+        tLandlord *landlord = &data->elems[i];
 
         if (landlord->id == property.landlord_id)
         {
@@ -202,11 +198,8 @@ void landlord_parse(tLandlord *data, tCSVEntry entry)
 // Given a structure of type tLandlord, adds it to the owners table of type tLandlords. If the owner is already at the table, it does nothing.
 void landlords_add(tLandlords *data, tLandlord landlord)
 {
-    for (i = 0; i < data->count; i++)
-    {
-        tLandlord dataLandlord = data->elems[i];
-
-        if (strcmp(dataLandlord.id, landlord.id) == 0) // Check if is not already at the table
+    for (i = 0; i < MAX_LANDLORDS; i++) {
+        if (strcmp(data->elems[i].id, landlord.id) == 0) // Check if is not already at the table
         {
             return;
         }
@@ -215,6 +208,8 @@ void landlords_add(tLandlords *data, tLandlord landlord)
         {
             data->elems[data->count] = landlord;
             data->count++;
+
+            return;
         }
     }
 }
