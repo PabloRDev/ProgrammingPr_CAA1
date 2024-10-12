@@ -43,6 +43,12 @@ typedef struct _tProperty
     char landlord_id[MAX_PERSON_ID];
 } tProperty;
 
+typedef struct _tProperties
+{
+    tProperty elems[MAX_PROPERTIES];
+    int count;
+} tProperties;
+
 typedef struct _tLandlord
 {
     char name[MAX_NAME];
@@ -50,12 +56,6 @@ typedef struct _tLandlord
     float tax;
     tProperties properties;
 } tLandlord;
-
-typedef struct _tProperties
-{
-    tProperty elems[MAX_PROPERTIES];
-    int count;
-} tProperties;
 
 typedef struct _tLandlords
 {
