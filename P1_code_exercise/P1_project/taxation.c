@@ -198,10 +198,25 @@ void landlord_parse(tLandlord *data, tCSVEntry entry)
 
 ////////////////////////////////////////
 
-// Add a new landlord
+// Add a new landlord:
+// Given a structure of type tLandlord, adds it to the owners table of type tLandlords. If the owner is already at the table, it does nothing.
 void landlords_add(tLandlords *data, tLandlord landlord)
 {
-    // TODO
+    for (i = 0; i < data->count; i++)
+    {
+        tLandlord dataLandlord = data->elems[i];
+
+        if (strcmp(dataLandlord.id, landlord.id) == 0) // Check if is not already at the table
+        {
+            return;
+        }
+
+        if (data->count < MAX_LANDLORDS) // Check if can be added
+        {
+            data->elems[data->count] = landlord;
+            data->count++;
+        }
+    }
 }
 
 // Returns true if field tax of expected[index] is greater than the one in declarant[index]
