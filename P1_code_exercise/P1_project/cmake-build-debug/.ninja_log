@@ -1,0 +1,5 @@
+# ninja log v6
+2	231	1728752756131630327	CMakeFiles/P1_project.dir/main.c.o	75c75f984663816f
+1	232	1728752756130682690	CMakeFiles/P1_project.dir/csv.c.o	713bd05281b4335c
+3	232	1728752756131786780	CMakeFiles/P1_project.dir/taxation.c.o	f28f36b3b95b5602
+232	384	1728752756361151587	P1_project	8a2529be5aadb87f
