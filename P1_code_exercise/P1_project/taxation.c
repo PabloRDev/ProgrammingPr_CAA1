@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
-#include "taxation.h"
+#include "./taxation.h"
 
 //////////////////////////////////
 // Available methods
@@ -83,7 +83,7 @@ void tenant_parse(tTenant *data, tCSVEntry entry)
 // Given the property rented to a tenant it updates the amount to be paid by its owner. If the property does not belong to any owner, nothing is done.
 void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
 {
-    char *propertyRef = tenant.cadastral_ref;
+    const char *propertyRef = tenant.cadastral_ref;
 
     for (int i = 0; i < tLandlords->count; i++)
     {
@@ -109,14 +109,14 @@ void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
 // Given an owner(tLandlord), returns a character string with the property data stored in the index position of the tProperties structure.The result is only used to display it on standard output.
 void property_get(tLandlord data, int index, char *buffer)
 {
-    tProperty property = data.properties[index];
+    tProperty property = data.properties.elems[index];
 
     if (index < 0 || index >= data.properties.count) // Index is invalid
     {
         return;
     }
 
-    sprintf(buffer, "%s;%s;%s;%s", //? print_index main?
+    sprintf(buffer, "%s;%s;%d;%s", //? print_index main?
             property.cadastral_ref,
             property.street,
             property.number,
@@ -234,14 +234,14 @@ void landlords_cpy(tLandlords *destination, tLandlords source)
 
     for (i = 0; i < source.count; i++)
     {
-        destination.elems[i].tax = 0;
-        destination->elems[i].id = source.elems[i].id;
+        destination->elems[i].tax = 0;
+        strcpy(destination->elems[i].id, source.elems[i].id);
         strcpy(destination->elems[i].name, source.elems[i].name);
         destination->elems[i].properties.count = source.elems[i].properties.count;
 
-        for (int j = 0; j < source->elems[i].properties.count; j++)
+        for (int j = 0; j < source.elems[i].properties.count; j++)
         {
-            destination->elems[i].properties.elems[j] = source->elems[i].properties.elems[j];
+            destination->elems[i].properties.elems[j] = source.elems[i].properties.elems[j];
         }
     }
 }
