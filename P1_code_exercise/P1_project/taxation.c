@@ -75,12 +75,10 @@ void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
 {
     char *propertyRef = tenant.cadastral_ref;
 
-    // Landlords iteration
     for (int i = 0; i < tLandlords->count; i++)
     {
         tLandlord *landlord = &tLandlords->elems[i];
 
-        // Properties iteration
         for (int j = 0; j < landlord->properties.count; j++)
         {
             if (landlord->properties.elems[j].cadastral_ref != propertyRef)
@@ -115,7 +113,6 @@ void property_parse(tProperty *data, tCSVEntry entry)
 // If the owner does not have the property in storage, the amount to be paid in taxes by the owner is added and updated considering that the new property is not rented.
 void landlord_add_property(tLandlords *tLandlords, tProperty property)
 {
-    // Landlords iteration
     for (int i = 0; i < tLandlords->count; i++)
     {
         tLandlord *landlord = &tLandlords->elems[i];
@@ -124,7 +121,6 @@ void landlord_add_property(tLandlords *tLandlords, tProperty property)
         {
             int exists = 0;
 
-            // Properties iteration
             for (int j = 0; j < landlord->properties.count; j++)
             {
                 if (landlord->properties.elems[j].cadastral_ref == property.cadastral_ref)
@@ -170,8 +166,23 @@ bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int ind
     return false;
 }
 
-// Copy the data from the source to destination
+// Copy the data from the source to destination:
+// Copies a structure of type tLandlords into another structure of the same type, except the amount to pay field which is initialized to zero in all owners.
 void landlords_cpy(tLandlords *destination, tLandlords source)
 {
-    // TODO
+    if (destination->count != source.count)
+        return;
+
+    for (i = 0; i < source.count; i++)
+    {
+        destination.elems[i].tax = 0;
+        destination->elems[i].id = source.elems[i].id;
+        strcpy(destination->elems[i].name, source.elems[i].name);
+        destination->elems[i].properties.count = source.elems[i].properties.count;
+
+        for (int j = 0; j < source->elems[i].properties.count; j++)
+        {
+            destination->elems[i].properties.elems[j] = source->elems[i].properties.elems[j];
+        }
+    }
 }
