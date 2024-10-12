@@ -162,8 +162,7 @@ void landlords_add(tLandlords *data, tLandlord landlord)
 // returns true if field tax of expected[index] is greater than the one in declarant[index]
 bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index)
 {
-    // TODO
-    return false;
+    return expected.elems[index].tax > declarant.elems[index].tax;
 }
 
 // Copy the data from the source to destination:
