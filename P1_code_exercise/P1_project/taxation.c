@@ -139,10 +139,21 @@ void landlord_add_property(tLandlords *tLandlords, tProperty property)
     }
 }
 
-// Get a landlord
+// Get a landlord:
+// Returns a character string with the owner's data stored in the index position of the tLandlords structure.The result is only used to display it on standard output.
 void landlord_get(tLandlords data, int index, char *buffer)
 {
-    // TODO
+    tLandlord landlord = data.elems[index];
+
+    if (index < 0 || index >= data.count) // Index is invalid
+    {
+        return;
+    }
+
+    sprintf(buffer, "%s;%s, %.1f", //? print_index main?
+            landlord.name,
+            landlord.id,
+            landlord.tax);
 }
 
 // Parse input from CSVEntry
@@ -159,7 +170,7 @@ void landlords_add(tLandlords *data, tLandlord landlord)
     // TODO
 }
 
-// returns true if field tax of expected[index] is greater than the one in declarant[index]
+// Returns true if field tax of expected[index] is greater than the one in declarant[index]
 bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index)
 {
     return expected.elems[index].tax > declarant.elems[index].tax;
