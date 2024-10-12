@@ -95,10 +95,22 @@ void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
     }
 }
 
-// Get a property
+// Get a property:
+// Given an owner(tLandlord), returns a character string with the property data stored in the index position of the tProperties structure.The result is only used to display it on standard output.
 void property_get(tLandlord data, int index, char *buffer)
 {
-    // TODO
+    tProperty property = data.properties[index]; 
+
+    if (index < 0 || index >= data.properties.count) // Index is invalid
+    {
+        return;
+    }
+
+    sprintf(buffer, "%s;%s;%s;%s", //? print_index main?
+            property.cadastral_ref,
+            property.street,
+            property.number,
+            property.landlord_id);
 }
 
 // Parse input from CSVEntry
