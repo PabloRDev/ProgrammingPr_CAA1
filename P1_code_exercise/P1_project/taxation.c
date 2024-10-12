@@ -62,10 +62,20 @@ int landlords_len(tLandlords data)
 // EX2: Implement your methods here....
 //////////////////////////////////////
 
-// Parse input from CSVEntry
+// Parse input from CSVEntry:
+// Given an entry in the CSV file (tCSVEntry) with the data of a tenant, it initializes a structure of type tTenant with that data
 void tenant_parse(tTenant *data, tCSVEntry entry)
 {
-    // TODO
+    sscanf(entry.fields[0], "%d/%d/%d", &data->start_date.day, &data->start_date.month, &data->start_date.year);
+    sscanf(entry.fields[1], "%d/%d/%d", &data->end_date.day, &data->end_date.month, &data->end_date.year);
+    strncpy(data->tenant_id, entry.fields[2], MAX_PERSON_ID);
+    data->tenant_id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
+    strncpy(data->name, entry.fields[3], MAX_NAME);
+    data->name[MAX_NAME - 1] = '\0'; // Ensure null termination
+    data->rent = atof(entry.fields[4]);
+    data->age = atoi(entry.fields[5]);
+    strncpy(data->cadastral_ref, entry.fields[6], MAX_CADASTRAL_REF);
+    data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
 }
 
 ////////////////////////////////////////
@@ -99,7 +109,7 @@ void landlords_process_tenant(tLandlords *tLandlords, tTenant tenant)
 // Given an owner(tLandlord), returns a character string with the property data stored in the index position of the tProperties structure.The result is only used to display it on standard output.
 void property_get(tLandlord data, int index, char *buffer)
 {
-    tProperty property = data.properties[index]; 
+    tProperty property = data.properties[index];
 
     if (index < 0 || index >= data.properties.count) // Index is invalid
     {
