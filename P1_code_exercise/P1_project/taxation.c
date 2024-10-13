@@ -78,7 +78,7 @@ void tenant_parse(tTenant *data, tCSVEntry entry) {
 void landlords_process_tenant(tLandlords *data, tTenant tenant) {
     const char *propertyRef = tenant.cadastral_ref;
     const int rentedMonths = tenant.end_date.month - tenant.start_date.month + 1;
-    const float rentedDiscount = 150.f * (float) rentedMonths;
+    const float rentedDiscount = AMOUNT_NO_RENT * (float) rentedMonths;
 
     for (int i = 0; i < data->count; i++) {
         tLandlord *landlord = &data->elems[i];
@@ -154,7 +154,7 @@ void landlord_add_property(tLandlords *data, tProperty property) {
             landlord->properties.elems[index].number = property.number;
 
             landlord->properties.count++;
-            landlord->tax += 150 * 12;
+            landlord->tax += (float) AMOUNT_NO_RENT * 12;
         }
     }
 }
