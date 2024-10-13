@@ -120,6 +120,13 @@ void property_get(tLandlord data, int index, char *buffer) {
 // Parse input from CSVEntry:
 // Given an entry in the CSV file (tCSVEntry) with the data of a property, it assigns them to a structure of type tProperty
 void property_parse(tProperty *data, tCSVEntry entry) {
+    if (strlen(entry.fields[0]) > MAX_CADASTRAL_REF ||
+        strlen(entry.fields[1]) > MAX_STREET ||
+        strlen(entry.fields[3]) > MAX_PERSON_ID ||
+        entry.fields[2][0] == '\0') {
+        return; // Entry is valid
+    }
+
     strncpy(data->cadastral_ref, entry.fields[0], MAX_CADASTRAL_REF);
     data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
     strncpy(data->street, entry.fields[1], MAX_STREET);
