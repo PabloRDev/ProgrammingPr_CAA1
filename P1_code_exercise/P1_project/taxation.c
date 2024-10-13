@@ -9,8 +9,7 @@
 //////////////////////////////////
 
 // Parse a tDateTime from string information
-void date_parse(tDate *date, const char *s_date)
-{
+void date_parse(tDate *date, const char *s_date) {
     // Check output data
     assert(date != NULL);
 
@@ -23,8 +22,7 @@ void date_parse(tDate *date, const char *s_date)
 }
 
 // Initialize the properties
-void properties_init(tProperties *data)
-{
+void properties_init(tProperties *data) {
     /////////////
     // Set the initial number of elements to zero.
     data->count = 0;
@@ -32,8 +30,7 @@ void properties_init(tProperties *data)
 }
 
 // Get the number of properties
-int properties_len(tLandlord data)
-{
+int properties_len(tLandlord data) {
     //////////////
     // Return the number of elements
     return data.properties.count;
@@ -41,8 +38,7 @@ int properties_len(tLandlord data)
 }
 
 // Initialize the landlords
-void landlords_init(tLandlords *data)
-{
+void landlords_init(tLandlords *data) {
     /////////////
     // Set the initial number of elements to zero.
     data->count = 0;
@@ -50,8 +46,7 @@ void landlords_init(tLandlords *data)
 }
 
 // Get the number of landlords
-int landlords_len(tLandlords data)
-{
+int landlords_len(tLandlords data) {
     //////////////
     // Return the number of elements
     return data.count;
@@ -64,8 +59,7 @@ int landlords_len(tLandlords data)
 
 // Parse input from CSVEntry:
 // Given an entry in the CSV file (tCSVEntry) with the data of a tenant, it initializes a structure of type tTenant with that data
-void tenant_parse(tTenant *data, tCSVEntry entry)
-{
+void tenant_parse(tTenant *data, tCSVEntry entry) {
     sscanf(entry.fields[0], "%d/%d/%d", &data->start_date.day, &data->start_date.month, &data->start_date.year);
     sscanf(entry.fields[1], "%d/%d/%d", &data->end_date.day, &data->end_date.month, &data->end_date.year);
     strncpy(data->tenant_id, entry.fields[2], MAX_PERSON_ID);
@@ -87,10 +81,8 @@ void landlords_process_tenant(tLandlords *data, tTenant tenant) {
     for (int i = 0; i < data->count; i++) {
         tLandlord *landlord = &data->elems[i];
 
-        for (int j = 0; j < landlord->properties.count; j++)
-        {
-            if (landlord->properties.elems[j].cadastral_ref != propertyRef)
-            {
+        for (int j = 0; j < landlord->properties.count; j++) {
+            if (strcmp(landlord->properties.elems[j].cadastral_ref, propertyRef) == 1) {
                 continue;
             }
 
@@ -105,11 +97,11 @@ void landlords_process_tenant(tLandlords *data, tTenant tenant) {
 
 // Get a property:
 // Given an owner(tLandlord), returns a character string with the property data stored in the index position of the tProperties structure.The result is only used to display it on standard output.
-void property_get(tLandlord data, int index, char *buffer)
-{
+void property_get(tLandlord data, int index, char *buffer) {
     tProperty property = data.properties.elems[index];
 
-    if (index < 0 || index >= data.properties.count) // Index is invalid
+    if (index < 0 || index >= data.properties.count || strcmp(data.properties.elems[index].cadastral_ref, "") == 0)
+    // Index is invalid
     {
         return;
     }
@@ -123,12 +115,11 @@ void property_get(tLandlord data, int index, char *buffer)
 
 // Parse input from CSVEntry:
 // given an entry in the CSV file (tCSVEntry) with the data of a property, it assigns them to a structure of type tProperty
-void property_parse(tProperty *data, tCSVEntry entry)
-{
+void property_parse(tProperty *data, tCSVEntry entry) {
     strncpy(data->cadastral_ref, entry.fields[0], MAX_CADASTRAL_REF);
     data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
     strncpy(data->street, entry.fields[1], MAX_STREET);
-    data->street[MAX_STREET - 1] = '\0';  // Ensure null termination
+    data->street[MAX_STREET - 1] = '\0'; // Ensure null termination
     data->number = atoi(entry.fields[2]); // Convert the string to an integer
     strncpy(data->landlord_id, entry.fields[3], MAX_PERSON_ID);
     data->landlord_id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
@@ -142,32 +133,32 @@ void landlord_add_property(tLandlords *data, tProperty property) {
     for (int i = 0; i < data->count; i++) {
         tLandlord *landlord = &data->elems[i];
 
-        if (landlord->id == property.landlord_id)
-        {
+        if (strcmp(landlord->id, property.landlord_id) == 0) {
             int exists = 0;
 
-            for (int j = 0; j < landlord->properties.count; j++)
-            {
-                if (landlord->properties.elems[j].cadastral_ref == property.cadastral_ref)
-                {
+            for (int j = 0; j < data->elems[i].properties.count; j++) {
+                if (strcmp(landlord->properties.elems[j].cadastral_ref, property.cadastral_ref) == 0) {
                     exists = 1;
 
                     break;
                 }
             }
 
-            if (!exists)
-            {
-                landlord->tax += 150;
-            }
+            int index = landlord->properties.count;
+            strcpy(landlord->properties.elems[index].cadastral_ref, property.cadastral_ref);
+            strcpy(landlord->properties.elems[index].landlord_id, property.landlord_id);
+            strcpy(landlord->properties.elems[index].street, property.street);
+            landlord->properties.elems[index].number = property.number;
+
+            landlord->properties.count++;
+            landlord->tax += 150;
         }
     }
 }
 
 // Get a landlord:
 // Returns a character string with the owner's data stored in the index position of the tLandlords structure.The result is only used to display it on standard output.
-void landlord_get(tLandlords data, int index, char *buffer)
-{
+void landlord_get(tLandlords data, int index, char *buffer) {
     tLandlord landlord = data.elems[index];
 
     if (index < 0 || index >= data.count) // Index is invalid
@@ -182,22 +173,22 @@ void landlord_get(tLandlords data, int index, char *buffer)
 }
 
 // Parse input from CSVEntry:
-// Given an entry in the CSV file (tCSVEntry) with the data of an owner(without property data), it initializes a structure of type tLandlord with that data.
-void landlord_parse(tLandlord *data, tCSVEntry entry)
-{
+// Given an entry in the CSV file (tCSVEntry) with the data of an owner (without property data), it initializes a structure of type tLandlord with that data.
+void landlord_parse(tLandlord *data, tCSVEntry entry) {
     strncpy(data->name, entry.fields[0], MAX_NAME);
     data->name[MAX_NAME - 1] = '\0'; // Ensure null termination
     strncpy(data->id, entry.fields[1], MAX_PERSON_ID);
     data->id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
     data->tax = atof(entry.fields[2]);
+
+    data->properties.count = 0;
 }
 
 ////////////////////////////////////////
 
 // Add a new landlord:
 // Given a structure of type tLandlord, adds it to the owners table of type tLandlords. If the owner is already at the table, it does nothing.
-void landlords_add(tLandlords *data, tLandlord landlord)
-{
+void landlords_add(tLandlords *data, tLandlord landlord) {
     for (i = 0; i < MAX_LANDLORDS; i++) {
         if (strcmp(data->elems[i].id, landlord.id) == 0) // Check if is not already at the table
         {
@@ -215,28 +206,20 @@ void landlords_add(tLandlords *data, tLandlord landlord)
 }
 
 // Returns true if field tax of expected[index] is greater than the one in declarant[index]
-bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index)
-{
+bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index) {
     return expected.elems[index].tax > declarant.elems[index].tax;
 }
 
 // Copy the data from the source to destination:
 // Copies a structure of type tLandlords into another structure of the same type, except the amount to pay field which is initialized to zero in all owners.
-void landlords_cpy(tLandlords *destination, tLandlords source)
-{
-    if (destination->count != source.count)
-        return;
-
-    for (i = 0; i < source.count; i++)
-    {
+void landlords_cpy(tLandlords *destination, tLandlords source) {
+    for (i = 0; i < source.count; i++) {
         destination->elems[i].tax = 0;
-        strcpy(destination->elems[i].id, source.elems[i].id);
-        strcpy(destination->elems[i].name, source.elems[i].name);
+        destination->count++;
         destination->elems[i].properties.count = source.elems[i].properties.count;
-
-        for (int j = 0; j < source.elems[i].properties.count; j++)
-        {
-            destination->elems[i].properties.elems[j] = source.elems[i].properties.elems[j];
-        }
+        strcpy(destination->elems[i].id, source.elems[i].id);
+        destination->elems[i].id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
+        strcpy(destination->elems[i].name, source.elems[i].name);
+        destination->elems[i].name[MAX_NAME - 1] = '\0'; // Ensure null termination
     }
 }
