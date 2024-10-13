@@ -66,7 +66,7 @@ void tenant_parse(tTenant *data, tCSVEntry entry) {
     data->tenant_id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
     strncpy(data->name, entry.fields[3], MAX_NAME);
     data->name[MAX_NAME - 1] = '\0'; // Ensure null termination
-    data->rent = atof(entry.fields[4]);
+    data->rent = (float) atof(entry.fields[4]);
     data->age = atoi(entry.fields[5]);
     strncpy(data->cadastral_ref, entry.fields[6], MAX_CADASTRAL_REF);
     data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
@@ -77,20 +77,24 @@ void tenant_parse(tTenant *data, tCSVEntry entry) {
 // Given the property rented to a tenant it updates the amount to be paid by its owner. If the property does not belong to any owner, nothing is done.
 void landlords_process_tenant(tLandlords *data, tTenant tenant) {
     const char *propertyRef = tenant.cadastral_ref;
+    const int rentedMonths = tenant.end_date.month - tenant.start_date.month + 1;
+    const float rentedDiscount = 150.f * (float) rentedMonths;
 
     for (int i = 0; i < data->count; i++) {
         tLandlord *landlord = &data->elems[i];
 
         for (int j = 0; j < landlord->properties.count; j++) {
-            if (strcmp(landlord->properties.elems[j].cadastral_ref, propertyRef) == 1) {
+            if (strcmp(landlord->properties.elems[j].cadastral_ref, propertyRef) != 0) {
+                // No landlord's property
                 continue;
             }
 
-            // Update owner tax based on tenant age
-            const float tax_increment = tenant.age > 35 ? 0.2 : 0.1;
-            landlord->tax += landlord->tax * tax_increment;
-
-            return;
+            // Tax based on tenant age
+            const float rentedTax = tenant.age > 35
+                                        ? (0.2f * tenant.rent * (float) rentedMonths)
+                                        : (0.1f * tenant.rent * (float) rentedMonths);
+            landlord->tax -= rentedDiscount;
+            landlord->tax += rentedTax;
         }
     }
 }
@@ -101,12 +105,12 @@ void property_get(tLandlord data, int index, char *buffer) {
     tProperty property = data.properties.elems[index];
 
     if (index < 0 || index >= data.properties.count || strcmp(data.properties.elems[index].cadastral_ref, "") == 0)
-    // Index is invalid
+    // Index or property error
     {
         return;
     }
 
-    sprintf(buffer, "%s;%s;%d;%s", //? print_index main?
+    sprintf(buffer, "%s;%s;%d;%s",
             property.cadastral_ref,
             property.street,
             property.number,
@@ -114,7 +118,7 @@ void property_get(tLandlord data, int index, char *buffer) {
 }
 
 // Parse input from CSVEntry:
-// given an entry in the CSV file (tCSVEntry) with the data of a property, it assigns them to a structure of type tProperty
+// Given an entry in the CSV file (tCSVEntry) with the data of a property, it assigns them to a structure of type tProperty
 void property_parse(tProperty *data, tCSVEntry entry) {
     strncpy(data->cadastral_ref, entry.fields[0], MAX_CADASTRAL_REF);
     data->cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
@@ -134,24 +138,23 @@ void landlord_add_property(tLandlords *data, tProperty property) {
         tLandlord *landlord = &data->elems[i];
 
         if (strcmp(landlord->id, property.landlord_id) == 0) {
-            int exists = 0;
-
             for (int j = 0; j < data->elems[i].properties.count; j++) {
                 if (strcmp(landlord->properties.elems[j].cadastral_ref, property.cadastral_ref) == 0) {
-                    exists = 1;
-
                     break;
                 }
             }
 
-            int index = landlord->properties.count;
+            const int index = landlord->properties.count;
             strcpy(landlord->properties.elems[index].cadastral_ref, property.cadastral_ref);
+            landlord->properties.elems[index].cadastral_ref[MAX_CADASTRAL_REF - 1] = '\0'; // Ensure null termination
             strcpy(landlord->properties.elems[index].landlord_id, property.landlord_id);
+            landlord->properties.elems[index].landlord_id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
             strcpy(landlord->properties.elems[index].street, property.street);
+            landlord->properties.elems[index].street[MAX_STREET - 1] = '\0'; // Ensure null termination
             landlord->properties.elems[index].number = property.number;
 
             landlord->properties.count++;
-            landlord->tax += 150;
+            landlord->tax += 150 * 12;
         }
     }
 }
@@ -179,7 +182,7 @@ void landlord_parse(tLandlord *data, tCSVEntry entry) {
     data->name[MAX_NAME - 1] = '\0'; // Ensure null termination
     strncpy(data->id, entry.fields[1], MAX_PERSON_ID);
     data->id[MAX_PERSON_ID - 1] = '\0'; // Ensure null termination
-    data->tax = atof(entry.fields[2]);
+    data->tax = (float) atof(entry.fields[2]);
 
     data->properties.count = 0;
 }
@@ -195,7 +198,7 @@ void landlords_add(tLandlords *data, tLandlord landlord) {
             return;
         }
 
-        if (data->count < MAX_LANDLORDS) // Check if can be added
+        if (data->count < MAX_LANDLORDS) // Check if new landlord can be added
         {
             data->elems[data->count] = landlord;
             data->count++;

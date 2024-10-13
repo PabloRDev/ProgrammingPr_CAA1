@@ -2,8 +2,7 @@
 #define __TAXATION_H__
 #include "csv.h"
 
-typedef struct _tDate
-{
+typedef struct _tDate {
     int day;
     int month;
     int year;
@@ -24,8 +23,7 @@ int i, j;
 #define AMOUNT_NO_RENT 150.0
 
 // Ex 1: Define data types here...
-typedef struct _tTenant
-{
+typedef struct _tTenant {
     tDate start_date;
     tDate end_date;
     char tenant_id[MAX_PERSON_ID];
@@ -35,30 +33,26 @@ typedef struct _tTenant
     char cadastral_ref[MAX_CADASTRAL_REF];
 } tTenant;
 
-typedef struct _tProperty
-{
+typedef struct _tProperty {
     char cadastral_ref[MAX_CADASTRAL_REF];
     char street[MAX_STREET];
     int number;
     char landlord_id[MAX_PERSON_ID];
 } tProperty;
 
-typedef struct _tProperties
-{
+typedef struct _tProperties {
     tProperty elems[MAX_PROPERTIES];
     int count;
 } tProperties;
 
-typedef struct _tLandlord
-{
+typedef struct _tLandlord {
     char name[MAX_NAME];
     char id[MAX_PERSON_ID];
     float tax;
     tProperties properties;
 } tLandlord;
 
-typedef struct _tLandlords
-{
+typedef struct _tLandlords {
     tLandlord elems[MAX_LANDLORDS];
     int count;
 } tLandlords;
@@ -109,7 +103,7 @@ void landlord_get(tLandlords data, int index, char *buffer);
 // Get a property data in a string
 void property_get(tLandlord data, int index, char *buffer);
 
-// returns true if field tax of expected[index] is greater than the one in declarant[index]
+// Returns true if field tax of expected[index] is greater than the one in declarant[index]
 bool mismatch_tax_declaration(tLandlords expected, tLandlords declarant, int index);
 
 /////////////////////////////////////
